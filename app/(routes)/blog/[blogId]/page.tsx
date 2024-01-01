@@ -8,6 +8,8 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import getBlogs from "@/actions/get-blogs";
 import BlogCard from "@/components/blog-card";
+import { Metadata, ResolvingMetadata } from "next";
+import { Billboard, Blog } from "@/types";
 
 interface BlogPageProps {
   params: {
@@ -16,7 +18,61 @@ interface BlogPageProps {
   };
 }
 
-const Blog: FC<BlogPageProps> = async ({ params }) => {
+export async function generateMetadata(
+  { params }: BlogPageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const id = params.categoryId;
+
+  // fetch data
+  const blog: Blog = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${params.blogId}`).then(
+    (res) => res.json()
+  );
+
+  const billboard: Billboard = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/billboards/${blog.category.billboardId}`
+  ).then((res) => res.json());
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: blog.title + " || Saraswoti Namuna Secondary School",
+    twitter: {
+      title: "Saraswoti Namuna Secondary School",
+      description: blog.headline,
+      images: [
+        {
+          protocol: "https",
+          pathname: "/**",
+          hostname: "res.cloudinary.com",
+          url: billboard.imageUrl,
+          alt: billboard.label,
+        },
+        ...previousImages,
+      ],
+    },
+    openGraph: {
+      siteName: blog.title + " || Saraswoti Namuna Secondary School",
+      type: "website",
+      description: blog.headline,
+      countryName: "Nepal",
+      images: [
+        {
+          protocol: "https",
+          pathname: "/**",
+          hostname: "res.cloudinary.com",
+          url: billboard.imageUrl,
+          alt: billboard.label,
+        },
+        ...previousImages,
+      ],
+    },
+  };
+}
+
+const BlogPage: FC<BlogPageProps> = async ({ params }) => {
   const blog = await getBlog(params.blogId);
   const relatedBlogs = await getBlogs({ categoryId: blog.categoryId });
   return (
@@ -49,4 +105,4 @@ const Blog: FC<BlogPageProps> = async ({ params }) => {
   );
 };
 
-export default Blog;
+export default BlogPage;

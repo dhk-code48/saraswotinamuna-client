@@ -41,7 +41,7 @@ function FooterLink({ url, text }: FooterLink) {
 
 function CategoryLink(category: Category) {
   return (
-    <li className="flex">
+    <li className="flex justify-center">
       <Link href={`/${category.id}`} className="hover:dark:text-violet-400">
         {category.name}
       </Link>
@@ -67,9 +67,9 @@ function RenderSocialIcon({ social }: { social: string | undefined }) {
 export default function Footer({ category }: { category: Category[] }) {
   return (
     <footer className="py-6 dark:bg-black dark:text-gray-50 border-t">
-      <div className="container px-6 mx-auto space-y-6 divide-y divide-gray-400 md:space-y-12 divide-opacity-50">
-        <div className="grid grid-cols-12">
-          <div className="pb-6 col-span-full md:pb-0 md:col-span-6">
+      <div className="container px-0 lg:px-6 mx-auto space-y-6 divide-y divide-gray-400 md:space-y-12 divide-opacity-50">
+        <div className="flex items-center justify-center flex-col gap-y-5 lg:grid grid-cols-3">
+          <div className="pb-6 md:pb-0">
             <Image
               src="/logo-light.png"
               className="h-24 w-auto"
@@ -79,22 +79,22 @@ export default function Footer({ category }: { category: Category[] }) {
             />
           </div>
 
-          <div className="col-span-6 text-center md:text-left md:col-span-3">
+          <div className="text-center">
             <p className="pb-1 text-lg font-medium">Links</p>
-            <ul>
+            <ul className="text-center">
               {category.map((link: Category) => (
                 <CategoryLink key={link.id} {...link} />
               ))}
             </ul>
           </div>
 
-          <div className="col-span-6 text-center md:text-left md:col-span-3">
+          <div className="text-center md:text-left">
             <div
               className="fb-page"
               data-href="https://www.facebook.com/saraswoti.namuna.3"
               data-tabs="timeline"
               data-width=""
-              data-height=""
+              data-height="200px"
               data-small-header="true"
               data-adapt-container-width="true"
               data-hide-cover="false"
@@ -111,9 +111,9 @@ export default function Footer({ category }: { category: Category[] }) {
             </div>
           </div>
         </div>
-        <div className="flex justify-center gap-x-1 text-nowrap pt-6">
-          ©{new Date().getFullYear()} All rights reserved and Handled By{" "}
-          <p className="font-bold">Binod Wagle</p>
+        <div className="flex flex-wrap justify-center gap-x-1 text-nowrap pt-6">
+          ©{new Date().getFullYear()} All rights reserved and
+          <p className="font-bold">Handled By Binod Wagle</p>
         </div>
       </div>
     </footer>

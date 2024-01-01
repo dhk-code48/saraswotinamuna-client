@@ -28,7 +28,7 @@ export default async function Home() {
           )}
           <Button className="mt-10">Read more</Button>
         </div>
-        <div>
+        <div className="mt-10 lg:mt-0">
           <h1 className="text-lg font-bold">Featured Posts</h1>
           {featuredBlogs &&
             featuredBlogs.map((blog, index) => <BlogCard key={blog.title} blog={blog} />)}

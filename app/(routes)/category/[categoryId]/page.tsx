@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import React, { FC } from "react";
 import Filter from "../../../../components/filter";
+import { Metadata, ResolvingMetadata } from "next";
+import { Billboard, Category } from "@/types";
 
 interface CategoryPageProp {
   params: { categoryId: string };
@@ -15,7 +17,59 @@ interface CategoryPageProp {
   };
 }
 
-const Category: FC<CategoryPageProp> = async ({ params, searchParams }) => {
+export async function generateMetadata(
+  { params, searchParams }: CategoryPageProp,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  // read route params
+  const id = params.categoryId;
+
+  // fetch data
+  const category: Category = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`
+  ).then((res) => res.json());
+
+  const billboard: Billboard = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/billboards/${category.billboardId}`
+  ).then((res) => res.json());
+
+  // optionally access and extend (rather than replace) parent metadata
+  const previousImages = (await parent).openGraph?.images || [];
+
+  return {
+    title: category.name + " || Saraswoti Namuna Secondary School",
+    twitter: {
+      title: "Saraswoti Namuna Secondary School",
+      description: billboard.description,
+      images: [
+        {
+          protocol: "https",
+          pathname: "/**",
+          hostname: "res.cloudinary.com",
+          url: billboard.imageUrl,
+          alt: billboard.label,
+        },
+        ...previousImages,
+      ],
+    },
+    openGraph: {
+      siteName: "Saraswoti Namuna Secondary School",
+      type: "website",
+      description: billboard.description,
+      countryName: "Nepal",
+      images: [
+        {
+          protocol: "https",
+          url: billboard.imageUrl,
+          alt: billboard.label,
+        },
+        ...previousImages,
+      ],
+    },
+  };
+}
+
+const CategoryPage: FC<CategoryPageProp> = async ({ params, searchParams }) => {
   const blogs = await getBlogs({
     categoryId: params.categoryId,
     subcategoryId: searchParams.subcategoryId,
@@ -57,4 +111,4 @@ const Category: FC<CategoryPageProp> = async ({ params, searchParams }) => {
   );
 };
 
-export default Category;
+export default CategoryPage;
